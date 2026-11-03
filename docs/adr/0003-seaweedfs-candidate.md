@@ -1,0 +1,25 @@
+# 0003: SeaweedFS as the candidate storage engine
+
+- **Status:** Proposed. Depends on the [feasibility gates](../feasibility.md)
+- **Date:** 2026-11-04
+
+## Problem
+
+The object store must be free, self-hosted and S3-compatible, and fit a small disk budget on one machine.
+
+## Options
+
+1. **SeaweedFS:** open source under Apache-2.0 with an S3 API. Its default volume allocation needs tuning for a small disk.
+2. **Another S3-compatible engine:** evaluate if SeaweedFS fails its gates.
+3. **Write a storage engine:** rejected, because blob durability is not what this project sets out to teach.
+
+## Decision
+
+Evaluate SeaweedFS first with disposable data. Accept only if a pinned release passes allocation, private access,
+multipart, restart and restore tests within the measured budget.
+
+## Consequences
+
+- The adapter stays replaceable until this record is accepted.
+- Failing the gates is a cheap, early change of engine rather than a late migration.
+- Measured results will be linked here when the status changes.

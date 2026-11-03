@@ -1,0 +1,63 @@
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+kubeconfig*
+*.kubeconfig
+*.tfstate*
+secrets/
+
+# Local data, never commit
+.local/
+volumes/
+backups/
+*.dump
+*.sql.gz
+*.tar
+*.tgz
+
+# Local overrides and real lab configuration
+compose.override.yaml
+docker-compose.override.yml
+*.local.yaml
+inventory.real*
+
+# Logs, coverage and test output
+*.log
+logs/
+coverage/
+.coverage
+test-results/
+playwright-report/
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.next/
+.svelte-kit/
+.vite/
+bin/
+obj/
+vendor/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+public/hot
+public/build/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/settings.local.json

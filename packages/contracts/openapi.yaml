@@ -1,0 +1,408 @@
+openapi: 3.1.0
+info:
+  title: PocketCloud API
+  version: 0.1.0-draft
+  summary: Draft contract for the first usable release. Not implemented.
+  description: >
+    Drafted for the streaming gateway in ADR 0004. All errors use RFC 9457 problem details.
+servers:
+  - url: http://127.0.0.1:8080
+    description: Local development
+security:
+  - sessionCookie: []
+tags:
+  - name: Session
+    description: Sign in and sign out.
+  - name: Uploads
+    description: Resumable upload sessions and their parts.
+  - name: Files
+    description: Published files and their contents.
+  - name: Usage
+    description: Quota and storage use.
+paths:
+  /v1/session:
+    post:
+      operationId: createSession
+      tags: [Session]
+      summary: Sign in
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        '204':
+          description: Signed in, with the session cookie set.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: deleteSession
+      tags: [Session]
+      summary: Sign out
+      responses:
+        '204':
+          description: Signed out.
+        '401':
+          $ref: '#/components/responses/Problem'
+  /v1/uploads:
+    post:
+      operationId: createUpload
+      tags: [Uploads]
+      summary: Start an upload and reserve quota
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUpload'
+      responses:
+        '201':
+          description: Upload session created and quota reserved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '507':
+          description: Quota or the physical free-space floor would be exceeded.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /v1/uploads/{uploadId}:
+    parameters:
+      - $ref: '#/components/parameters/UploadId'
+    get:
+      operationId: getUpload
+      tags: [Uploads]
+      summary: Read state and recorded parts, used to resume
+      responses:
+        '200':
+          description: Current upload session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: abortUpload
+      tags: [Uploads]
+      summary: Abort an upload and release its reservation
+      responses:
+        '204':
+          description: Aborted. Repeating this is harmless.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /v1/uploads/{uploadId}/parts/{partNumber}:
+    parameters:
+      - $ref: '#/components/parameters/UploadId'
+      - name: partNumber
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10000
+    put:
+      operationId: putUploadPart
+      tags: [Uploads]
+      summary: Stream one part. Retrying replaces the earlier attempt
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              contentEncoding: binary
+      responses:
+        '200':
+          description: Part stored and recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadPart'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '413':
+          $ref: '#/components/responses/Problem'
+  /v1/uploads/{uploadId}/complete:
+    parameters:
+      - $ref: '#/components/parameters/UploadId'
+    post:
+      operationId: completeUpload
+      tags: [Uploads]
+      summary: Assemble parts and begin verification. Repeating this is harmless
+      responses:
+        '202':
+          description: Verification started or already under way.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+  /v1/files:
+    get:
+      operationId: listFiles
+      tags: [Files]
+      summary: List available files
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        '200':
+          description: One page of files.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilePage'
+        '401':
+          $ref: '#/components/responses/Problem'
+  /v1/files/{fileId}:
+    parameters:
+      - $ref: '#/components/parameters/FileId'
+    get:
+      operationId: getFile
+      tags: [Files]
+      summary: Read file metadata
+      responses:
+        '200':
+          description: File metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: deleteFile
+      tags: [Files]
+      summary: Delete a file explicitly
+      responses:
+        '204':
+          description: Deleted.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /v1/files/{fileId}/content:
+    parameters:
+      - $ref: '#/components/parameters/FileId'
+    get:
+      operationId: downloadFile
+      tags: [Files]
+      summary: Download file bytes as an attachment, with range support
+      responses:
+        '200':
+          description: Whole file.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                contentEncoding: binary
+        '206':
+          description: Requested byte range.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                contentEncoding: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+  /v1/usage:
+    get:
+      operationId: getUsage
+      tags: [Usage]
+      summary: Read logical usage, reservations and quota
+      responses:
+        '200':
+          description: Current usage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usage'
+        '401':
+          $ref: '#/components/responses/Problem'
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: pocketcloud_session
+  parameters:
+    UploadId:
+      name: uploadId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    FileId:
+      name: fileId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Problem:
+      description: Request failed. See the problem details.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    Credentials:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    CreateUpload:
+      type: object
+      required: [name, declaredSizeBytes]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        declaredSizeBytes:
+          type: integer
+          format: int64
+          minimum: 0
+        sha256:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+          description: Optional independently obtained source hash to verify against.
+    Upload:
+      type: object
+      required: [id, state, name, declaredSizeBytes, partSizeBytes, parts, expiresAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum: [INITIATED, UPLOADING, VERIFYING, AVAILABLE, FAILED, ABORTED]
+        name:
+          type: string
+        declaredSizeBytes:
+          type: integer
+          format: int64
+        partSizeBytes:
+          type: integer
+          format: int64
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/UploadPart'
+        fileId:
+          type: string
+          format: uuid
+          description: Present once the state is AVAILABLE.
+        expiresAt:
+          type: string
+          format: date-time
+    UploadPart:
+      type: object
+      required: [partNumber, sizeBytes]
+      properties:
+        partNumber:
+          type: integer
+          minimum: 1
+        sizeBytes:
+          type: integer
+          format: int64
+    File:
+      type: object
+      required: [id, name, sizeBytes, sha256, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+        sha256:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    FilePage:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        nextCursor:
+          type: string
+    Usage:
+      type: object
+      required: [liveBytes, reservedBytes, quotaBytes]
+      properties:
+        liveBytes:
+          type: integer
+          format: int64
+        reservedBytes:
+          type: integer
+          format: int64
+        quotaBytes:
+          type: integer
+          format: int64
+    Problem:
+      type: object
+      description: RFC 9457 problem details.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri-reference

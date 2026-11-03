@@ -1,0 +1,26 @@
+# Keep the build context free of secrets, data and history
+.git
+.github
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kubeconfig*
+secrets/
+.local/
+volumes/
+backups/
+*.dump
+*.sql.gz
+docs/
+tests/
+prototypes/
+**/node_modules
+**/dist
+**/build
+**/bin
+**/obj
+**/.venv
+**/__pycache__
+*.log

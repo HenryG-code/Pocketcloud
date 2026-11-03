@@ -1,0 +1,10 @@
+# Linux containers and WSL2 expect LF, even when edited from Windows
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.mp4 binary
+*.woff2 binary
