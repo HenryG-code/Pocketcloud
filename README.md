@@ -41,4 +41,4 @@ Two copies on one disk do not protect against that disk failing.
 
 ## Licence
 
-Not yet chosen.
+[MIT](LICENSE). Third-party components keep their own licences.

@@ -5,6 +5,9 @@ info:
   summary: Draft contract for the first usable release. Not implemented.
   description: >
     Drafted for the streaming gateway in ADR 0004. All errors use RFC 9457 problem details.
+  license:
+    name: MIT
+    identifier: MIT
 servers:
   - url: http://127.0.0.1:8080
     description: Local development

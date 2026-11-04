@@ -8,3 +8,4 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Project structure and planning documentation.
+- MIT licence.
