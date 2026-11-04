@@ -285,7 +285,7 @@ Two separate limits apply, because logical size does not equal disk use:
 | Physical floor | Measured free disk space | Refuses new transfers before the host runs out |
 
 The physical budget must also cover unfinished parts, rejected uploads awaiting cleanup, storage-engine
-overhead and maintenance space. Nothing is deleted automatically to stay under a limit.
+overhead, deleted bytes not yet vacuumed and maintenance space. Nothing is deleted automatically to stay under a limit.
 
 ### 8.3 Consistency
 

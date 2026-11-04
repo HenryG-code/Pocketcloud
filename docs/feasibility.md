@@ -6,14 +6,15 @@ Do not ingest personal files until every gate below has passed. Record results a
 ## Capacity (measure before committing to the cap)
 
 - [ ] Host free space measured, along with WSL, Docker and object-store allocation
-- [ ] Pinned object-store release, with volume size and preallocation reviewed
-- [ ] Allocated bytes measured after startup, upload, deletion and maintenance
+- [x] Pinned object-store release, with volume size and preallocation reviewed ([trial](benchmarks/2026-11-04-seaweedfs-64mib-trial.md))
+- [x] Allocated bytes measured after startup, upload, deletion and maintenance, at 1 GiB ([trial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md))
 - [ ] Physical free-space floor chosen from those measurements
 
 ## Storage engine
 
 - [ ] Volumes, filer metadata, PostgreSQL data and recovery configuration are explicitly persisted
-- [ ] Credentials configured, internal ports restricted, unauthenticated reads and writes fail
+- [x] Credentials configured, internal ports restricted, unauthenticated reads and writes fail ([trial](benchmarks/2026-11-04-seaweedfs-64mib-trial.md))
+- [ ] Container runs as non-root, or the exception is justified (the trial image runs as root)
 - [ ] Multipart, signing, checksums, range requests and required headers tested against this exact version
 - [ ] Oversized upload rejected before exhausting the disk, or the streaming gateway is selected
 
@@ -26,7 +27,7 @@ Do not ingest personal files until every gate below has passed. Record results a
 
 - [ ] A disposable 1 GiB test survives restart, interrupted upload, integrity verification, quota rejection, backup and isolated restore
 - [ ] A representative 10 GB test then does the same within measured capacity
-- [ ] Application containers can be deleted and restarted with data intact
+- [x] Storage container can be deleted and recreated with data intact ([trial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md)). Repeat once application containers exist
 
 ## Decision
 

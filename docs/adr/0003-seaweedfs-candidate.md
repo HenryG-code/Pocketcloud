@@ -18,6 +18,10 @@ The object store must be free, self-hosted and S3-compatible, and fit a small di
 Evaluate SeaweedFS first with disposable data. Accept only if a pinned release passes allocation, private access,
 multipart, restart and restore tests within the measured budget.
 
+## Evidence so far
+
+A [64 MiB trial](../benchmarks/2026-11-04-seaweedfs-64mib-trial.md) found low overhead and private access working, but deleted space is only freed after vacuum, and the image runs as root. A [1 GiB trial](../benchmarks/2026-11-04-seaweedfs-1gib-trial.md) confirmed both, with about 0.03% overhead for one large file. The decision stays open until multipart, oversize, backup and restore tests are done.
+
 ## Consequences
 
 - The adapter stays replaceable until this record is accepted.
