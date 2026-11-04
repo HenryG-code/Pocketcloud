@@ -310,6 +310,20 @@ API errors use RFC 9457 problem details. Structured logs carry request and sessi
 credentials. Track bytes as well as request counts: unfinished multipart bytes, reservations, free disk,
 metadata and object mismatches, and verification duration.
 
+### 8.6 Backup and restore
+
+A complete backup needs four things, because the system cannot be rebuilt without all of them:
+
+| Item | Why |
+|---|---|
+| PostgreSQL | Knows which files exist, who owns them and their expected hashes |
+| Object storage volume | Holds the bytes and the storage engine's own metadata |
+| Storage and application configuration | Includes credentials, which are not inside the volume |
+| Source manifest, kept separately | Proves that restored files match the originals |
+
+Stop writes first, so PostgreSQL and storage describe the same moment. A [restore trial](benchmarks/2026-11-04-seaweedfs-restore-trial.md)
+proved the object storage part with the original destroyed. PostgreSQL is not yet included, and a copy on the same disk does not survive that disk failing.
+
 ## 9. Architecture decisions
 
 See the [decision records](adr/). Section 4 maps each one to the problem it solves.

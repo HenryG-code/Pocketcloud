@@ -10,6 +10,8 @@ Disposable test of whether SeaweedFS fits PocketCloud's limits. Generated data o
 ./resume.sh       # cut off an upload, crash storage, resume and verify, then delete everything it created
 ```
 
+`./restore.sh` stores 1,005 generated files, backs them up, destroys the original, restores, verifies and damages one byte, then deletes everything it created.
+
 `resume.sh` takes about four minutes because it waits for cleanup to finish.
 
 Credentials are generated into the ignored `.local/` folder on each run. Results go in `docs/benchmarks/`.

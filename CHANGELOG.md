@@ -12,3 +12,4 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Storage feasibility prototype and first SeaweedFS trial results.
 - Oversized upload test in Go.
 - Interrupted upload and crash recovery test in Go.
+- Backup, restore and deliberate damage test in Go.
