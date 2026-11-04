@@ -23,6 +23,10 @@ Test whether the chosen backend enforces request, part and session limits on sig
 only if it does. Otherwise, the first release uses the gateway. The [API contract](../../packages/contracts/openapi.yaml)
 is drafted for the gateway as the safer default.
 
+## Evidence so far
+
+An [oversize trial](../benchmarks/2026-11-04-seaweedfs-oversize-trial.md) found that signed URLs and part URLs refuse more bytes than their signed size, and that a URL signed without a size has no limit. Temporary disk use, raw-connection behaviour, part retries and browser access remain untested, so this decision stays open.
+
 ## Consequences
 
 - Both options share the same session, part and completion states, so switching later is contained.

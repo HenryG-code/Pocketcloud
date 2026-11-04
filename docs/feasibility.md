@@ -16,7 +16,7 @@ Do not ingest personal files until every gate below has passed. Record results a
 - [x] Credentials configured, internal ports restricted, unauthenticated reads and writes fail ([trial](benchmarks/2026-11-04-seaweedfs-64mib-trial.md))
 - [ ] Container runs as non-root, or the exception is justified (the trial image runs as root)
 - [ ] Multipart, signing, checksums, range requests and required headers tested against this exact version
-- [ ] Oversized upload rejected before exhausting the disk, or the streaming gateway is selected
+- [ ] Oversized upload rejected before exhausting the disk, or the streaming gateway is selected. [Partial evidence](benchmarks/2026-11-04-seaweedfs-oversize-trial.md): small oversized uploads are refused, with temporary disk use unmeasured
 
 ## Networking
 

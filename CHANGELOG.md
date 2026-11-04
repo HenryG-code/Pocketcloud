@@ -10,3 +10,4 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Project structure and planning documentation.
 - MIT licence.
 - Storage feasibility prototype and first SeaweedFS trial results.
+- Oversized upload test in Go.

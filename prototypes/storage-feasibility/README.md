@@ -6,6 +6,7 @@ Disposable test of whether SeaweedFS fits PocketCloud's limits. Generated data o
 ./run.sh          # start, test and measure with 1024 MiB of random data
 ./run.sh 64       # the same with a smaller file
 ./run.sh clean    # delete this prototype's container, volume and generated files
+./oversize.sh     # check whether signed uploads refuse extra bytes, then delete everything it created
 ```
 
 Credentials are generated into the ignored `.local/` folder on each run. Results go in `docs/benchmarks/`.
