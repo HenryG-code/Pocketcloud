@@ -11,3 +11,4 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - MIT licence.
 - Storage feasibility prototype and first SeaweedFS trial results.
 - Oversized upload test in Go.
+- Interrupted upload and crash recovery test in Go.

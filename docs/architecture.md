@@ -233,12 +233,12 @@ This table is the heart of the design. PostgreSQL and object storage cannot comm
 | Crash point | State left behind | Recovery |
 |---|---|---|
 | After reservation, before multipart start | Session with no upload | Session expires and the reservation is released |
-| During part upload | Part unrecorded | Browser resends. A retried part replaces the earlier one |
-| After part stored, before it is recorded | Stored bytes unknown to PostgreSQL | Browser resends. Abort or completion clears the extra bytes |
+| During part upload | Part unrecorded, but bytes already sent stay on disk | Browser resends. Vacuum reclaims the partial bytes later |
+| After part stored, before it is recorded | Stored bytes unknown to PostgreSQL | Browser resends. The API records the newest tag for each part. Later cleanup reclaims the extra bytes |
 | After storage completes, before VERIFYING is saved | Object complete, session UPLOADING | Reconciler checks storage and continues, or the client retries safely |
 | During verification | Session stays VERIFYING | Claim expires and another worker verifies again |
 | After publication commits | File AVAILABLE | Nothing needed |
-| Session abandoned | Parts consuming disk | Expiry aborts the multipart upload and releases the reservation |
+| Session abandoned | Parts consuming disk | Expiry aborts the multipart upload and releases the reservation. Vacuum alone does not free these bytes |
 
 ## 7. Deployment view
 
@@ -285,13 +285,18 @@ Two separate limits apply, because logical size does not equal disk use:
 | Physical floor | Measured free disk space | Refuses new transfers before the host runs out |
 
 The physical budget must also cover unfinished parts, rejected uploads awaiting cleanup, storage-engine
-overhead, deleted bytes not yet vacuumed and maintenance space. Nothing is deleted automatically to stay under a limit.
+overhead, deleted bytes not yet vacuumed, partial transfers, retried parts and maintenance space. In a
+[64 MiB trial](benchmarks/2026-11-04-seaweedfs-resume-trial.md), one cut transfer and one retry added about 19% until cleaned up. Nothing is deleted automatically to stay under a limit.
 
 ### 8.3 Consistency
 
 PostgreSQL decides what exists. Object storage holds bytes. Objects are written first and published in
 PostgreSQL last, so a crash can leave an unreferenced object but never a file record with missing bytes.
 Cleanup waits for a grace period and rechecks references before deleting.
+
+PostgreSQL also records each part's newest tag, because the object store's own part listing can show a retried
+part twice. Completion names exactly those parts. Storage returns 404 for a repeated completion, so the API
+checks its own state first, which is what makes completion safe to repeat.
 
 ### 8.4 Integrity
 

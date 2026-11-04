@@ -20,7 +20,7 @@ multipart, restart and restore tests within the measured budget.
 
 ## Evidence so far
 
-A [64 MiB trial](../benchmarks/2026-11-04-seaweedfs-64mib-trial.md) found low overhead and private access working, but deleted space is only freed after vacuum, and the image runs as root. A [1 GiB trial](../benchmarks/2026-11-04-seaweedfs-1gib-trial.md) confirmed both, with about 0.03% overhead for one large file. An [oversize trial](../benchmarks/2026-11-04-seaweedfs-oversize-trial.md) found size limits enforced on signed uploads. The decision stays open until multipart resume, backup and restore tests are done.
+A [64 MiB trial](../benchmarks/2026-11-04-seaweedfs-64mib-trial.md) found low overhead and private access working, but deleted space is only freed after vacuum, and the image runs as root. A [1 GiB trial](../benchmarks/2026-11-04-seaweedfs-1gib-trial.md) confirmed both, with about 0.03% overhead for one large file. An [oversize trial](../benchmarks/2026-11-04-seaweedfs-oversize-trial.md) found size limits enforced on signed uploads. A [resume trial](../benchmarks/2026-11-04-seaweedfs-resume-trial.md) found resume and crash recovery working at 64 MiB, with quirks the API must handle. The decision stays open until backup, restore and larger tests are done.
 
 ## Consequences
 

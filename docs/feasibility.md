@@ -25,7 +25,7 @@ Do not ingest personal files until every gate below has passed. Record results a
 
 ## Durability
 
-- [ ] A disposable 1 GiB test survives restart, interrupted upload, integrity verification, quota rejection, backup and isolated restore
+- [ ] A disposable 1 GiB test survives restart, interrupted upload, integrity verification, quota rejection, backup and isolated restore. [Partial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md): restart and integrity pass at 1 GiB, and [interruption passes at 64 MiB](benchmarks/2026-11-04-seaweedfs-resume-trial.md). Quota, backup and restore are untested
 - [ ] A representative 10 GB test then does the same within measured capacity
 - [x] Storage container can be deleted and recreated with data intact ([trial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md)). Repeat once application containers exist
 

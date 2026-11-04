@@ -18,6 +18,10 @@ PostgreSQL and object storage cannot commit atomically together. A crash between
 Option 3. Write bytes first and publish in PostgreSQL last. Every transition is a conditional update from an
 expected state. A worker verifies objects and repairs or reclaims anything left in between.
 
+## Evidence so far
+
+A [resume trial](../benchmarks/2026-11-04-seaweedfs-resume-trial.md) found that storage returns 404 for a repeated completion and can list a retried part twice. This supports keeping the authoritative record in PostgreSQL.
+
 ## Consequences
 
 - A crash can waste space temporarily, but cannot show a file whose bytes are missing.
