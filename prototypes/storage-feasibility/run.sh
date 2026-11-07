@@ -15,6 +15,8 @@ alloc() { echo "ALLOC $1: $($DC exec -T seaweedfs du -sk /data | cut -f1) KiB"; 
 s3() { curl -sS -K .local/curlrc --aws-sigv4 "aws:amz:us-east-1:s3" -H "x-amz-content-sha256: UNSIGNED-PAYLOAD" "$@"; }
 wait_ready() { for _ in $(seq 1 60); do [ "$(curl -s -o /dev/null -w '%{http_code}' $EP/)" != 000 ] && { sleep 3; return 0; }; sleep 2; done; echo "S3 did not start"; exit 1; }
 
+# If this mounted file was missing, Docker created a root-owned directory in its place. Clear it.
+if [ -d .local/s3.json ]; then docker run --rm --entrypoint rm -v "$PWD:/w" "$(sed -n 's/^ *image: //p' compose.yaml)" -rf /w/.local; fi
 mkdir -p .local; chmod 700 .local
 AK=$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n'); SK=$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')
 printf '{"identities":[{"name":"proto","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","List","Write"]}]}\n' "$AK" "$SK" > .local/s3.json
@@ -24,13 +26,13 @@ echo "== start"
 if ! docker version >/dev/null 2>&1; then echo "Cannot reach Docker. Is Docker Desktop running? If it says permission denied, open a new Ubuntu window."; exit 1; fi
 $DC up -d --quiet-pull 2>&1 | tail -1 || { echo "Could not start SeaweedFS"; exit 1; }
 wait_ready; alloc "after startup"
-$DC exec -T seaweedfs sh -c 'id -u' | sed 's/^/INFO  container uid: /'
+$DC exec -T seaweedfs sh -c 'grep ^Uid /proc/1/status' | awk '{print "INFO  server uid: "$2}'
 
 echo "== access control"
 check "credentialed bucket create" "$(s3 -o /dev/null -w '%{http_code}' -X PUT $EP/proto)" 200
 check "anonymous list refused" "$(curl -s -o /dev/null -w '%{http_code}' $EP/proto)" 403
 check "anonymous write refused" "$(curl -s -o /dev/null -w '%{http_code}' -X PUT --data x $EP/proto/anon)" 403
-check "wrong secret refused" "$(curl -s -o /dev/null -w '%{http_code}' --user "$AK:wrong" --aws-sigv4 'aws:amz:us-east-1:s3' -H 'x-amz-content-sha256: UNSIGNED-PAYLOAD' $EP/proto)" 403
+check "wrong secret refused" "$(curl -s -o /dev/null -w '%{http_code}' --user "$AK:wrong" --aws-sigv4 'aws:amz:us-east-1:s3' -H 'x-amz-content-sha256: UNSIGNED-PAYLOAD' $EP/proto)" 403 # gitleaks:allow (deliberately wrong password)
 for p in 9333 8888 8080; do check "port $p not published" "$(curl -s -m 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:$p/)" 000; done
 
 echo "== upload ${SIZE_MIB} MiB of random data"

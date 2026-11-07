@@ -28,7 +28,7 @@ The upload took 29.9 seconds, which reflects this one local path only and is not
 - The file was split across several volume files, the largest about 193 MB, all under the 256 MiB limit.
 - Deleted bytes stayed allocated until vacuum, confirming the 64 MiB result at a larger size.
 - SHA-256 matched after upload, restart and a recreated container.
-- All access control checks passed. The container still runs as root.
+- All access control checks passed. **Corrected:** this was a measurement mistake. The uid 0 came from `docker exec`, while the server process ran as uid 1000. Prototypes now set this explicitly, and it was [confirmed from the host](2026-11-04-seaweedfs-10gib-trial.md).
 
 ## Not tested
 

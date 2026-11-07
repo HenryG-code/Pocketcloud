@@ -1,4 +1,5 @@
 # Reviewed false positive: run.sh tests a deliberately wrong password.
 # The value is the variable $AK and the word "wrong", not a credential.
+# These entries cover past commits. The current line carries a gitleaks:allow comment.
 419b71375b133c46591c732eb88785c3342b4052:prototypes/storage-feasibility/run.sh:curl-auth-user:31
 prototypes/storage-feasibility/run.sh:curl-auth-user:31

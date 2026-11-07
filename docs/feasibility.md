@@ -1,6 +1,6 @@
 # Feasibility gates
 
-**Start here.** Nothing is tested yet. Use disposable data only, in `prototypes/storage-feasibility/`.
+**Start here.** Use disposable data only, in `prototypes/storage-feasibility/`.
 Do not ingest personal files until every gate below has passed. Record results and link them here.
 
 ## Capacity (measure before committing to the cap)
@@ -14,9 +14,9 @@ Do not ingest personal files until every gate below has passed. Record results a
 
 - [ ] Volumes, filer metadata, PostgreSQL data and recovery configuration are explicitly persisted
 - [x] Credentials configured, internal ports restricted, unauthenticated reads and writes fail ([trial](benchmarks/2026-11-04-seaweedfs-64mib-trial.md))
-- [ ] Container runs as non-root, or the exception is justified (the trial image runs as root)
+- [x] Container runs as non-root, with capabilities dropped and a read-only root filesystem ([trial](benchmarks/2026-11-04-seaweedfs-10gib-trial.md))
 - [ ] Multipart, signing, checksums, range requests and required headers tested against this exact version
-- [ ] Oversized upload rejected before exhausting the disk, or the streaming gateway is selected. [Partial evidence](benchmarks/2026-11-04-seaweedfs-oversize-trial.md): small oversized uploads are refused, with temporary disk use unmeasured
+- [ ] Oversized upload rejected before exhausting the disk, or the streaming gateway is selected. [Partial evidence](benchmarks/2026-11-04-seaweedfs-oversize-trial.md): signed sizes refused a 256 MiB upload with no disk growth. Unsized URLs have no limit, and limits across many parts and retries are untested
 
 ## Networking
 
@@ -25,8 +25,8 @@ Do not ingest personal files until every gate below has passed. Record results a
 
 ## Durability
 
-- [ ] A disposable 1 GiB test survives restart, interrupted upload, integrity verification, quota rejection, backup and isolated restore. [Partial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md): restart and integrity pass at 1 GiB, and [interruption passes at 64 MiB](benchmarks/2026-11-04-seaweedfs-resume-trial.md). [Object-store restore passes at about 70 MiB](benchmarks/2026-11-04-seaweedfs-restore-trial.md). Quota needs the application, and restore needs repeating at 1 GiB with PostgreSQL
-- [ ] A representative 10 GB test then does the same within measured capacity
+- [ ] A disposable 1 GiB test survives restart, interrupted upload, integrity verification, quota rejection, backup and isolated restore. [Partial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md): restart and integrity pass at 1 GiB, and [interruption passes at 64 MiB](benchmarks/2026-11-04-seaweedfs-resume-trial.md). [Object-store restore passes at about 70 MiB](benchmarks/2026-11-04-seaweedfs-restore-trial.md). [Restore passes at 1 GiB](benchmarks/2026-11-04-seaweedfs-10gib-trial.md). Quota needs the application, and restore needs repeating with PostgreSQL
+- [ ] A representative 10 GB test then does the same within measured capacity. [Partial](benchmarks/2026-11-04-seaweedfs-10gib-trial.md): store, backup, isolated restore and integrity pass at 10 GiB. Interruption, quota and PostgreSQL are still open
 - [x] Storage container can be deleted and recreated with data intact ([trial](benchmarks/2026-11-04-seaweedfs-1gib-trial.md)). Repeat once application containers exist
 
 ## Decision

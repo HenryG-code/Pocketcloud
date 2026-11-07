@@ -21,7 +21,7 @@ Failure and empty states: empty drive, expired session, quota reached, checksum 
 |---|---|
 | Feasibility prototype | Disposable storage, network, integrity and restore tests, including a representative 10 GB batch |
 | First usable release | One owner, authenticated upload, list and download, persistent data, explicit delete, quotas, interrupted-transfer recovery, verified export, independent backup method |
-| Later scope | Folders, multiple users, expiring shares, trash, version history, previews, Kubernetes |
+| Later scope | Folders, multiple users, expiring shares, trash, version history, previews, Kubernetes, login-protected internet access ([ADR 0006](adr/0006-public-access-through-edge-proxy.md)) |
 
 **Excluded for now:** automatic trash purge, version retention, public access, and any automatic deletion of user data to maintain a limit.
 

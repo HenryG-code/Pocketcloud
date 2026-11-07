@@ -245,7 +245,8 @@ func tarVolume(volume, path string) {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	cmd := exec.Command("docker", "run", "--rm", "--entrypoint", "tar", "-v", volume+":/data:ro", image(), "-C", "/data", "-cf", "-", ".")
+	// The archive travels over stdout, so turn logging off or Docker also stores a copy in its logs.
+	cmd := exec.Command("docker", "run", "--rm", "--log-driver", "none", "--entrypoint", "tar", "-v", volume+":/data:ro", image(), "-C", "/data", "-cf", "-", ".")
 	cmd.Stdout = file
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

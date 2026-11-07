@@ -28,7 +28,7 @@ was spread across at least 6 volume files.
 - **Deleting does not free disk space until vacuum runs.** Physical accounting must count deleted bytes until then.
 - Data survived a restart and a recreated container, with matching SHA-256.
 - Anonymous reads and writes and a wrong secret were refused. Internal ports were not published.
-- The container runs as root (uid 0), which conflicts with the planned non-root standard and is unresolved.
+- **Corrected:** this was a measurement mistake. The uid 0 came from `docker exec`, while the server process ran as uid 1000. Prototypes now set this explicitly, and it was [confirmed from the host](2026-11-04-seaweedfs-10gib-trial.md).
 
 ## Not tested
 

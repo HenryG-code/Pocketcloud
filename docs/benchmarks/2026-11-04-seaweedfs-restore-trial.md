@@ -1,6 +1,6 @@
 # SeaweedFS backup and restore trial
 
-**Date:** 2026-11-04. **Status:** the object store restores correctly at about 70 MiB. Backup with PostgreSQL, larger sizes and an independent disk are untested.
+**Date:** 2026-11-04. **Status:** the object store restores correctly at about 70 MiB, and [later at 1 GiB and 10 GiB](2026-11-04-seaweedfs-10gib-trial.md). Backup with PostgreSQL and an independent disk are untested.
 
 ## Setup
 
@@ -42,4 +42,4 @@ shows that this damage was detected, not that all damage will be.
 - Backing up PostgreSQL and objects together, which is what a real restore depends on
 - Backing up while storage is running
 - An independent physical disk. This archive was on the same disk, so it would not survive that disk failing
-- 1 GiB or 10 GB restores, and damage to metadata rather than file data
+- Damage to metadata rather than file data

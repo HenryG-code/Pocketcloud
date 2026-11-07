@@ -322,7 +322,9 @@ A complete backup needs four things, because the system cannot be rebuilt withou
 | Source manifest, kept separately | Proves that restored files match the originals |
 
 Stop writes first, so PostgreSQL and storage describe the same moment. A [restore trial](benchmarks/2026-11-04-seaweedfs-restore-trial.md)
-proved the object storage part with the original destroyed. PostgreSQL is not yet included, and a copy on the same disk does not survive that disk failing.
+proved the object storage part with the original destroyed, and a [10 GiB trial](benchmarks/2026-11-04-seaweedfs-10gib-trial.md) repeated it at the planned quota size. PostgreSQL is not yet included, and a copy on the same disk does not survive that disk failing.
+
+A backup needs free space for a second complete copy while it runs. Backups must also not pass through a container's output with logging on, because Docker's default logging stores a copy of that output. An early 10 GiB attempt used about 64 GiB this way.
 
 ## 9. Architecture decisions
 

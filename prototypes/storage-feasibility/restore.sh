@@ -7,6 +7,8 @@ DC="docker compose -p pocketcloud-proto"
 DR="docker compose -p pocketcloud-proto-restore"
 docker version >/dev/null 2>&1 || { echo "Cannot reach Docker. Is Docker Desktop running? If it says permission denied, open a new Ubuntu window."; exit 1; }
 trap '$DC down -v >/dev/null 2>&1; $DR down -v >/dev/null 2>&1; rm -rf .local' EXIT
+# If this mounted file was missing, Docker created a root-owned directory in its place. Clear it.
+if [ -d .local/s3.json ]; then docker run --rm --entrypoint rm -v "$PWD:/w" "$(sed -n 's/^ *image: //p' compose.yaml)" -rf /w/.local; fi
 mkdir -p .local; chmod 700 .local
 AK=$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n')
 SK=$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')

@@ -30,9 +30,12 @@
 - A sized part URL refuses a larger part, so total size can be bounded by the size and number of parts the API signs.
 - The POST policy's `content-length-range` was enforced in this test.
 
+## Disk use during refusal
+
+A 1 MiB grant was sent a 256 MiB upload, with and without a declared length. Both were refused with 403 in about half a second, and disk use grew by 0 KiB.
+
 ## Not tested
 
-- Whether refused bytes use temporary disk before the refusal
 - Sending more bytes than the declared `Content-Length` over a raw connection
 - Part retries, concurrent sessions and many parts adding up across a session
 - Browser access, CORS, and hostnames reachable from another device

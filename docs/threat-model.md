@@ -52,6 +52,18 @@ flowchart LR
 Share tokens and signed URLs are bearer credentials. If they are added, store token hashes, keep expiry short,
 never log them in full, and state in the interface that issued URLs stay valid until expiry.
 
+## If exposed to the internet
+
+Planned in [ADR 0006](adr/0006-public-access-through-edge-proxy.md), and required before any public exposure.
+
+| STRIDE | Threat | Planned mitigation | Verified by |
+|---|---|---|---|
+| Spoofing | Automated password attacks on the public login | Multi-factor authentication, throttling, alerts | Login abuse test |
+| Elevation of privilege | Compromised edge device reaches the home network | Isolated network segment, one permitted port | Connection tests from the edge device |
+| Denial of service | Floods or endless uploads through the proxy | Rate limits, request size limits, disk floor | Load and oversize tests |
+| Information disclosure | Stolen storage host | Encrypted disk, with keys held separately | Boot and recovery test |
+| Tampering | Unpatched exposed software | Automatic updates, patching routine, dependency scans | Version review |
+
 ## Accepted risks
 
 - A single host and disk mean no protection from hardware failure without independent backup.

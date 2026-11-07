@@ -12,6 +12,8 @@ Disposable test of whether SeaweedFS fits PocketCloud's limits. Generated data o
 
 `./restore.sh` stores 1,005 generated files, backs them up, destroys the original, restores, verifies and damages one byte, then deletes everything it created.
 
+`./batch.sh 1024` stores a mixed set of files, backs them up, destroys the original, restores and verifies every byte, then deletes everything it created. `./batch.sh 10240` does the same at 10 GiB. It takes about six minutes and keeps the disk busy.
+
 `resume.sh` takes about four minutes because it waits for cleanup to finish.
 
 Credentials are generated into the ignored `.local/` folder on each run. Results go in `docs/benchmarks/`.

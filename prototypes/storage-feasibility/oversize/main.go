@@ -17,6 +17,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -83,6 +85,27 @@ func main() {
 	for _, r := range results {
 		fmt.Printf("%-42s %-7d %-12s %s\n", r.name, r.status, size(r.stored), verdict(r))
 	}
+
+	fmt.Println("\nDisk use while a 1 MiB grant receives a 256 MiB upload:")
+	for _, hide := range []bool{false, true} {
+		before := allocated()
+		started := time.Now()
+		status := put(sizedURL(fmt.Sprintf("huge-%v", hide)), 256<<20, hide)
+		fmt.Printf("  no declared length=%-5v status %d after %.1fs, disk grew by %d KiB\n", hide, status, time.Since(started).Seconds(), allocated()-before)
+	}
+}
+
+// allocated returns KiB used on the data volume.
+func allocated() int {
+	out, err := exec.Command("docker", "compose", "-p", "pocketcloud-proto", "exec", "-T", "seaweedfs", "du", "-sk", "/data").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	kib, err := strconv.Atoi(strings.Fields(string(out))[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+	return kib
 }
 
 func newClient(ctx context.Context) *s3.Client {

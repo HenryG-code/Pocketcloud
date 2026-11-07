@@ -13,9 +13,15 @@ services:
       - -s3.config=/etc/seaweedfs/s3.json
       # Defaults are 30 GiB volumes. Small volumes keep allocation visible and bounded.
       - -master.volumeSizeLimitMB=256
-      - -volume.max=16
+      - -volume.max=${VOLUME_MAX:-16}
       - -volume.minFreeSpace=5GiB
     mem_limit: 2g
+    # Start as the image's unprivileged user, with no extra permissions and a read-only system.
+    user: "1000:1000"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true
+    tmpfs: [/tmp]
     # Only the S3 API is published, and only on this machine.
     ports:
       - "127.0.0.1:18333:8333"
