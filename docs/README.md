@@ -11,6 +11,7 @@ Everything here describes **planned** behaviour until the status says otherwise.
 4. [API contract](../packages/contracts/openapi.yaml): what the browser and API agree on
 5. [Threat model](threat-model.md): what could go wrong deliberately
 6. [Feasibility gates](feasibility.md): what must be proven first
+7. [Build plan](build-plan.md): the order of work, one tested slice at a time
 
 ## Standards
 

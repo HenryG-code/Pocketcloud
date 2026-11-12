@@ -3,8 +3,9 @@
 A self-hosted cloud drive: upload, download and manage your files on hardware you own, with
 resumable transfers and verified backups.
 
-> **Status: not started.** This repository holds the plan and structure. Nothing below is implemented,
-> and no claim here has been tested.
+> **Status: feasibility prototype.** The storage engine trials are recorded in
+> [docs/benchmarks](docs/benchmarks/). The application itself is not built yet, and nothing below is
+> implemented. The [build plan](docs/build-plan.md) lists what comes next.
 
 ## Stack
 
@@ -32,6 +33,7 @@ Start with the [documentation index](docs/README.md).
 - [API contract](packages/contracts/openapi.yaml): OpenAPI draft
 - [Threat model](docs/threat-model.md)
 - [Feasibility gates](docs/feasibility.md)
+- [Build plan](docs/build-plan.md): the order of work, one tested slice at a time
 - [Decision records](docs/adr/)
 
 ## Limitations
